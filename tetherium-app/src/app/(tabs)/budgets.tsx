@@ -1,9 +1,142 @@
-import { View, Text } from "react-native";
+import { useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useAuthStore } from "@/stores/authStore";
+import { useBudgetStore } from "@/stores/budgetStore";
+import { getBudgets } from "@/api";
 
-export default function TransactionsScreen() {
+const now = new Date();
+const CURRENT_MONTH = now.getMonth() + 1;
+const CURRENT_YEAR = now.getFullYear();
+
+export default function BudgetsScreen() {
+  const token = useAuthStore((state) => state.token);
+  const { budgets, loading, setBudgets, setLoading } = useBudgetStore();
+  const router = useRouter();
+
+  const loadBudgets = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const data = await getBudgets(token, CURRENT_MONTH, CURRENT_YEAR);
+      setBudgets(data);
+    } catch (err) {
+      console.error("Failed to load budgets", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadBudgets();
+  }, [loadBudgets]);
+
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Budgets</Text>
+    <View style={styles.container}>
+      <FlatList
+        data={budgets}
+        keyExtractor={(item) => item.id}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={loadBudgets} />
+        }
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No budgets set for this month</Text>
+        }
+        renderItem={({ item }) => {
+          const limit = parseFloat(item.limit);
+          const spent = parseFloat(item.spent);
+          const percent = Math.min(spent / limit, 1);
+          const isOver = spent > limit;
+
+          return (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.category}>{item.category}</Text>
+                <Text style={[styles.amounts, isOver && styles.overText]}>
+                  ${spent.toFixed(2)} / ${limit.toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${percent * 100}%` },
+                    isOver && styles.progressOver,
+                  ]}
+                />
+              </View>
+              {isOver && <Text style={styles.overLabel}>Over budget</Text>}
+            </View>
+          );
+        }}
+      />
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/budgets/add")}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff" },
+  listContent: { padding: 16 },
+  empty: { textAlign: "center", color: "#9ca3af", marginTop: 40 },
+  card: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  category: { fontSize: 16, fontWeight: "600" },
+  amounts: { fontSize: 14, color: "#6b7280" },
+  overText: { color: "#dc2626", fontWeight: "600" },
+  progressTrack: {
+    height: 8,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#2563eb",
+    borderRadius: 4,
+  },
+  progressOver: {
+    backgroundColor: "#dc2626",
+  },
+  overLabel: {
+    fontSize: 12,
+    color: "#dc2626",
+    marginTop: 4,
+    fontWeight: "600",
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#2563eb",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 4,
+  },
+  fabText: { color: "white", fontSize: 28, lineHeight: 30 },
+});

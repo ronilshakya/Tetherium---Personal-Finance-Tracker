@@ -1,10 +1,15 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { TopBar } from "@/components/TopBar";
 
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{ tabBarActiveTintColor: "#2563eb", headerShown: false }}
+      screenOptions={{
+        tabBarActiveTintColor: "#2563eb",
+        header: () => <TopBar />,
+        sceneStyle: { backgroundColor: "#fff" },
+      }}
     >
       <Tabs.Screen
         name="index"

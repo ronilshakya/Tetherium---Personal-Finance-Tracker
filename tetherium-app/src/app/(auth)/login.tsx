@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { login as loginApi } from "../../api/client";
+import { login as loginApi } from "../../api";
 import { useAuthStore } from "../../stores/authStore";
 
 export default function LoginScreen() {
@@ -16,7 +16,7 @@ export default function LoginScreen() {
     try {
       const { user, token } = await loginApi(email, password);
       login(user, token);
-      router.replace("/(tabs)/index");
+      router.replace("/(tabs)");
     } catch (err: any) {
       Alert.alert("Login failed", err.message);
     } finally {

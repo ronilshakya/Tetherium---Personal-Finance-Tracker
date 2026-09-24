@@ -7,6 +7,7 @@ export default function Index() {
     <View style={styles.container}>
       <Text style={styles.title}>Tetherio</Text>
       <Text>{user ? `Welcome, ${user.name}` : "Not logged in"}</Text>
+      <Text>{user?.email}</Text>
     </View>
   );
 }
