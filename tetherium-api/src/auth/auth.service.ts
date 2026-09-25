@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { CategoriesService } from 'src/categories/categories.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -57,10 +58,20 @@ export class AuthService {
     return this.buildAuthResponse(user);
   }
 
-  private buildAuthResponse(user: { id: string; email: string; name: string }) {
+  private buildAuthResponse(user: {
+    id: string;
+    email: string;
+    name: string;
+    currency: string;
+  }) {
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
     return {
-      user: { id: user.id, email: user.email, name: user.name },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        currency: user.currency,
+      },
       token,
     };
   }
@@ -68,8 +79,22 @@ export class AuthService {
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, name: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        currency: true,
+        createdAt: true,
+      },
     });
     return user;
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: dto,
+      select: { id: true, email: true, name: true, currency: true },
+    });
   }
 }

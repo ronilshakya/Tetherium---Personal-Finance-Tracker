@@ -27,6 +27,20 @@ export interface DashboardSummary {
   recentTransactions: DashboardTransaction[];
 }
 
+export interface CategorySpending {
+  categoryId: string;
+  categoryName: string;
+  color: string | null;
+  total: number;
+}
+
+export interface MonthlyTrend {
+  month: number;
+  year: number;
+  income: number;
+  expense: number;
+}
+
 export function getDashboardSummary(
   token: string,
   month: number,
@@ -34,6 +48,24 @@ export function getDashboardSummary(
 ) {
   return apiRequest<DashboardSummary>(
     `/dashboard/summary?month=${month}&year=${year}`,
+    { token },
+  );
+}
+
+export function getSpendingByCategory(
+  token: string,
+  month: number,
+  year: number,
+) {
+  return apiRequest<CategorySpending[]>(
+    `/dashboard/spending-by-category?month=${month}&year=${year}`,
+    { token },
+  );
+}
+
+export function getMonthlyTrend(token: string, months: number = 6) {
+  return apiRequest<MonthlyTrend[]>(
+    `/dashboard/monthly-trend?months=${months}`,
     { token },
   );
 }

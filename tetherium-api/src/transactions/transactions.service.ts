@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -17,9 +18,42 @@ export class TransactionsService {
     });
   }
 
-  findAll(userId: string) {
+  async update(userId: string, id: string, dto: UpdateTransactionDto) {
+    await this.findOne(userId, id);
+    return this.prisma.transaction.update({
+      where: { id },
+      data: dto,
+      include: { category: true },
+    });
+  }
+
+  findAll(
+    userId: string,
+    filters: { from?: Date; to?: Date; categoryId?: string; search?: string },
+  ) {
+    const { from, to, categoryId, search } = filters;
+
     return this.prisma.transaction.findMany({
-      where: { userId },
+      where: {
+        userId,
+        ...(from || to
+          ? {
+              date: {
+                ...(from ? { gte: from } : {}),
+                ...(to ? { lte: to } : {}),
+              },
+            }
+          : {}),
+        ...(categoryId ? { categoryId } : {}),
+        ...(search
+          ? {
+              description: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            }
+          : {}),
+      },
       orderBy: { date: 'desc' },
       include: { category: true },
     });
@@ -28,6 +62,7 @@ export class TransactionsService {
   async findOne(userId: string, id: string) {
     const transaction = await this.prisma.transaction.findUnique({
       where: { id },
+      include: { category: true },
     });
     if (!transaction) throw new NotFoundException('Transaction not found');
     if (transaction.userId !== userId) throw new ForbiddenException();

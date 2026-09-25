@@ -1,7 +1,7 @@
 const API_URL = "http://192.168.1.2:5000";
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   token?: string;
   body?: object;
 }

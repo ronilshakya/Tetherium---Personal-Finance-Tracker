@@ -77,4 +77,79 @@ export class DashboardService {
       recentTransactions,
     };
   }
+
+  async getSpendingByCategory(userId: string, month: number, year: number) {
+    const monthStart = new Date(year, month - 1, 1);
+    const monthEnd = new Date(year, month, 1);
+
+    const grouped = await this.prisma.transaction.groupBy({
+      by: ['categoryId'],
+      where: {
+        userId,
+        type: 'EXPENSE',
+        date: { gte: monthStart, lt: monthEnd },
+      },
+      _sum: { amount: true },
+    });
+
+    const categories = await this.prisma.category.findMany({
+      where: { id: { in: grouped.map((g) => g.categoryId) } },
+    });
+
+    return grouped.map((g) => {
+      const category = categories.find((c) => c.id === g.categoryId)!;
+      return {
+        categoryId: g.categoryId,
+        categoryName: category.name,
+        color: category.color,
+        total: g._sum.amount ?? 0,
+      };
+    });
+  }
+
+  async getMonthlyTrend(userId: string, monthsBack: number = 6) {
+    const now = new Date();
+    const results: {
+      month: number;
+      year: number;
+      income: number;
+      expense: number;
+    }[] = [];
+
+    for (let i = monthsBack - 1; i >= 0; i--) {
+      const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = targetDate.getMonth() + 1;
+      const year = targetDate.getFullYear();
+      const monthStart = new Date(year, month - 1, 1);
+      const monthEnd = new Date(year, month, 1);
+
+      const [income, expense] = await Promise.all([
+        this.prisma.transaction.aggregate({
+          where: {
+            userId,
+            type: 'INCOME',
+            date: { gte: monthStart, lt: monthEnd },
+          },
+          _sum: { amount: true },
+        }),
+        this.prisma.transaction.aggregate({
+          where: {
+            userId,
+            type: 'EXPENSE',
+            date: { gte: monthStart, lt: monthEnd },
+          },
+          _sum: { amount: true },
+        }),
+      ]);
+
+      results.push({
+        month,
+        year,
+        income: Number(income._sum.amount ?? 0),
+        expense: Number(expense._sum.amount ?? 0),
+      });
+    }
+
+    return results;
+  }
 }

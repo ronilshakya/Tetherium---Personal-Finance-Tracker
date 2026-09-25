@@ -1,14 +1,29 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { TopBar } from "@/components/TopBar";
+import { useTheme } from "@/theme/useTheme";
+import { PlatformPressable } from "expo-router/build/react-navigation";
 
 export default function TabLayout() {
+  const { colors } = useTheme();
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#2563eb",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+        },
         header: () => <TopBar />,
-        sceneStyle: { backgroundColor: "#fff" },
+        sceneStyle: { backgroundColor: colors.background },
+        tabBarButton: (props) => (
+          <PlatformPressable
+            {...props}
+            android_ripple={{ color: "transparent" }}
+            pressOpacity={1}
+          />
+        ),
       }}
     >
       <Tabs.Screen

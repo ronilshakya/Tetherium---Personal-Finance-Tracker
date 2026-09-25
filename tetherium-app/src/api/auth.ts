@@ -4,6 +4,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  currency: string;
 }
 
 interface AuthResponse {
@@ -27,4 +28,8 @@ export function register(email: string, password: string, name: string) {
 
 export function getMe(token: string) {
   return apiRequest<User>("/auth/me", { token });
+}
+
+export function updateProfile(token: string, data: { currency?: string }) {
+  return apiRequest<User>("/auth/me", { method: "PATCH", token, body: data });
 }

@@ -17,8 +17,38 @@ interface CreateTransactionInput {
   description?: string;
 }
 
-export function getTransactions(token: string) {
-  return apiRequest<Transaction[]>("/transactions", { token });
+export function getTransactions(
+  token: string,
+  filters: {
+    from?: Date;
+    to?: Date;
+    categoryId?: string;
+    search?: string;
+  } = {},
+) {
+  const params = new URLSearchParams();
+  if (filters.from) params.append("from", filters.from.toISOString());
+  if (filters.to) params.append("to", filters.to.toISOString());
+  if (filters.categoryId) params.append("categoryId", filters.categoryId);
+  if (filters.search) params.append("search", filters.search);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiRequest<Transaction[]>(`/transactions${query}`, { token });
+}
+
+export function getTransaction(token: string, id: string) {
+  return apiRequest<Transaction>(`/transactions/${id}`, { token });
+}
+
+export function updateTransaction(
+  token: string,
+  id: string,
+  data: Partial<CreateTransactionInput>,
+) {
+  return apiRequest<Transaction>(`/transactions/${id}`, {
+    method: "PATCH",
+    token,
+    body: data,
+  });
 }
 
 export function createTransaction(token: string, data: CreateTransactionInput) {
