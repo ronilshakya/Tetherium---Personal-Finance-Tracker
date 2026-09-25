@@ -13,6 +13,7 @@ export class TransactionsService {
   create(userId: string, dto: CreateTransactionDto) {
     return this.prisma.transaction.create({
       data: { ...dto, userId },
+      include: { category: true },
     });
   }
 

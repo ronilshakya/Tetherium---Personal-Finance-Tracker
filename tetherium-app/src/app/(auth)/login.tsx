@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { login as loginApi } from "../../api";
 import { useAuthStore } from "../../stores/authStore";
@@ -47,6 +55,12 @@ export default function LoginScreen() {
         onPress={handleLogin}
         disabled={loading}
       />
+      <TouchableOpacity
+        onPress={() => router.push("/(auth)/register")}
+        style={styles.linkContainer}
+      >
+        <Text style={styles.link}>Don't have an account? Sign up</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -66,4 +80,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
   },
+  linkContainer: { marginTop: 20, alignItems: "center" },
+  link: { color: "#2563eb", fontWeight: "600" },
 });

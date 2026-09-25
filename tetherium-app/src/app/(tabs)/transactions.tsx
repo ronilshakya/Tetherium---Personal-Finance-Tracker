@@ -50,7 +50,7 @@ export default function TransactionsScreen() {
         renderItem={({ item }) => (
           <View style={styles.row}>
             <View>
-              <Text style={styles.category}>{item.category}</Text>
+              <Text style={styles.category}>{item.category.name}</Text>
               {item.description ? (
                 <Text style={styles.description}>{item.description}</Text>
               ) : null}

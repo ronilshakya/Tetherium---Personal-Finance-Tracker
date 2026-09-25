@@ -38,6 +38,7 @@ export default function RootLayout() {
     >
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="(auth)/login" />
+      <Stack.Screen name="(auth)/register" />
       <Stack.Screen
         name="transactions/add"
         options={{
@@ -61,6 +62,10 @@ export default function RootLayout() {
           headerShown: true,
           title: "New Category",
         }}
+      />
+      <Stack.Screen
+        name="categories/index"
+        options={{ headerShown: true, title: "Categories" }}
       />
       <Stack.Screen
         name="notifications"

@@ -44,6 +44,19 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Category not found');
     if (category.userId !== userId) throw new ForbiddenException();
-    return this.prisma.category.delete({ where: { id } });
+
+    try {
+      return await this.prisma.category.delete({ where: { id } });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2003'
+      ) {
+        throw new ConflictException(
+          'This category is used by existing transactions or budgets and cannot be deleted',
+        );
+      }
+      throw err;
+    }
   }
 }

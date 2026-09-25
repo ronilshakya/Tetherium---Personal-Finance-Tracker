@@ -55,11 +55,15 @@ export default function BudgetsScreen() {
           const spent = parseFloat(item.spent);
           const percent = Math.min(spent / limit, 1);
           const isOver = spent > limit;
+          const barColor = item.category.color ?? "#2563eb";
 
           return (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Text style={styles.category}>{item.category}</Text>
+                <View style={styles.categoryLabel}>
+                  <View style={[styles.dot, { backgroundColor: barColor }]} />
+                  <Text style={styles.category}>{item.category.name}</Text>
+                </View>
                 <Text style={[styles.amounts, isOver && styles.overText]}>
                   ${spent.toFixed(2)} / ${limit.toFixed(2)}
                 </Text>
@@ -68,8 +72,10 @@ export default function BudgetsScreen() {
                 <View
                   style={[
                     styles.progressFill,
-                    { width: `${percent * 100}%` },
-                    isOver && styles.progressOver,
+                    {
+                      width: `${percent * 100}%`,
+                      backgroundColor: isOver ? "#dc2626" : barColor,
+                    },
                   ]}
                 />
               </View>
@@ -101,8 +107,11 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
+  categoryLabel: { flexDirection: "row", alignItems: "center", gap: 8 },
+  dot: { width: 10, height: 10, borderRadius: 5 },
   category: { fontSize: 16, fontWeight: "600" },
   amounts: { fontSize: 14, color: "#6b7280" },
   overText: { color: "#dc2626", fontWeight: "600" },
@@ -114,11 +123,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#2563eb",
     borderRadius: 4,
-  },
-  progressOver: {
-    backgroundColor: "#dc2626",
   },
   overLabel: {
     fontSize: 12,

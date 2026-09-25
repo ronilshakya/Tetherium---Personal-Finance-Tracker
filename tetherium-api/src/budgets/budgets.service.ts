@@ -14,7 +14,10 @@ export class BudgetsService {
 
   async create(userId: string, dto: CreateBudgetDto) {
     try {
-      return await this.prisma.budget.create({ data: { ...dto, userId } });
+      return await this.prisma.budget.create({
+        data: { ...dto, userId },
+        include: { category: true },
+      });
     } catch (err) {
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&
