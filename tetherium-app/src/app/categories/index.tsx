@@ -11,12 +11,17 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/authStore";
 import { getCategories, deleteCategory, Category } from "@/api";
+import { useTheme } from "@/theme/useTheme";
+import { ThemeColors } from "@/theme/colors";
+import { fonts } from "@/theme/typography";
 
 export default function CategoriesScreen() {
   const [expenseCategories, setExpenseCategories] = useState<Category[]>([]);
   const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
   const token = useAuthStore((state) => state.token);
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -71,22 +76,35 @@ export default function CategoriesScreen() {
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <View style={styles.rowLeft}>
-              <View
-                style={[
-                  styles.dot,
-                  { backgroundColor: item.color ?? "#6b7280" },
-                ]}
-              />
-              <Text style={styles.name}>{item.name}</Text>
-            </View>
-            <TouchableOpacity onPress={() => handleDelete(item)} hitSlop={8}>
-              <Ionicons name="trash-outline" size={20} color="#dc2626" />
+        renderItem={({ item }) => {
+          const color = item.color ?? colors.textSecondary;
+          return (
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() => router.push(`/categories/add?id=${item.id}`)}
+            >
+              <View style={styles.rowLeft}>
+                <View
+                  style={[styles.iconCircle, { backgroundColor: color + "26" }]}
+                >
+                  <Ionicons
+                    name={(item.icon as any) ?? "pricetag-outline"}
+                    size={18}
+                    color={color}
+                  />
+                </View>
+                <Text style={styles.name}>{item.name}</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleDelete(item)} hitSlop={8}>
+                <Ionicons
+                  name="trash-outline"
+                  size={20}
+                  color={colors.danger}
+                />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </View>
-        )}
+          );
+        }}
         ListEmptyComponent={<Text style={styles.empty}>No categories yet</Text>}
       />
 
@@ -100,38 +118,59 @@ export default function CategoriesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  listContent: { padding: 16, paddingBottom: 100 },
-  sectionHeader: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#6b7280",
-    textTransform: "uppercase",
-    marginTop: 20,
-    marginBottom: 8,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-  },
-  rowLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  dot: { width: 12, height: 12, borderRadius: 6 },
-  name: { fontSize: 16 },
-  empty: { textAlign: "center", color: "#9ca3af", marginTop: 40 },
-  addButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "#2563eb",
-    padding: 16,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  addButtonText: { color: "white", fontWeight: "700", fontSize: 16 },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.surface },
+    listContent: { padding: 16, paddingBottom: 100 },
+    sectionHeader: {
+      fontSize: 13,
+      fontFamily: fonts.semibold,
+      color: colors.textSecondary,
+      textTransform: "uppercase",
+      marginTop: 20,
+      marginBottom: 8,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 10,
+      paddingHorizontal: 14,
+      backgroundColor: colors.background,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+      marginBottom: 8,
+    },
+    rowLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+    iconCircle: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    name: { fontSize: 15, fontFamily: fonts.medium, color: colors.text },
+    empty: {
+      textAlign: "center",
+      color: colors.textSecondary,
+      fontFamily: fonts.regular,
+      marginTop: 40,
+    },
+    addButton: {
+      position: "absolute",
+      bottom: 20,
+      left: 20,
+      right: 20,
+      backgroundColor: colors.primary,
+      padding: 16,
+      borderRadius: 10,
+      alignItems: "center",
+    },
+    addButtonText: {
+      color: colors.white,
+      fontFamily: fonts.bold,
+      fontSize: 16,
+    },
+  });
+}

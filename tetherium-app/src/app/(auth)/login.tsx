@@ -11,6 +11,9 @@ import {
 import { useRouter } from "expo-router";
 import { login as loginApi } from "../../api";
 import { useAuthStore } from "../../stores/authStore";
+import { useTheme } from "@/theme/useTheme";
+import { ThemeColors } from "@/theme/colors";
+import { fonts } from "@/theme/typography";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -18,6 +21,8 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -38,6 +43,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={colors.textSecondary}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -46,6 +52,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={colors.textSecondary}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -65,21 +72,25 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 24 },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 32,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  linkContainer: { marginTop: 20, alignItems: "center" },
-  link: { color: "#2563eb", fontWeight: "600" },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: { flex: 1, justifyContent: "center", padding: 24 },
+    title: {
+      fontSize: 32,
+      fontFamily: fonts.bold,
+      marginBottom: 32,
+      textAlign: "center",
+      color: colors.text,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      color: colors.text,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+    },
+    linkContainer: { marginTop: 20, alignItems: "center" },
+    link: { color: colors.primary, fontWeight: "600" },
+  });
+}

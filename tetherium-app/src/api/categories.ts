@@ -31,3 +31,15 @@ export function createCategory(token: string, data: CreateCategoryInput) {
 export function deleteCategory(token: string, id: string) {
   return apiRequest<void>(`/categories/${id}`, { method: "DELETE", token });
 }
+
+export function updateCategory(
+  token: string,
+  id: string,
+  data: Partial<{ name: string; icon: string; color: string }>,
+) {
+  return apiRequest<Category>(`/categories/${id}`, {
+    method: "PATCH",
+    token,
+    body: data,
+  });
+}

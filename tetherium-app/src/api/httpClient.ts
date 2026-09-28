@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.1.2:5000";
+const API_URL = "http://192.168.1.6:5000";
 
 interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

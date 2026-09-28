@@ -13,6 +13,11 @@ export const lightColors = {
   danger: "#dc2626",
   dangerLight: "#fef2f2",
   white: "#ffffff",
+  successFixed: "#4ade80",
+  dangerFixed: "#f87171",
+  heroCardBackground: "#2563eb",
+  heroCardText: "#ffffff",
+  heroCardTextMuted: "#dbeafe",
 };
 
 export const darkColors = {
@@ -30,6 +35,11 @@ export const darkColors = {
   danger: "#ef4444",
   dangerLight: "#2b1414",
   white: "#ffffff",
+  successFixed: "#4ade80",
+  dangerFixed: "#f87171",
+  heroCardBackground: "#3730a3",
+  heroCardText: "#f8fafc",
+  heroCardTextMuted: "#c7d2fe",
 };
 
 export type ThemeColors = typeof lightColors;

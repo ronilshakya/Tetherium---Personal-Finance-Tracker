@@ -103,11 +103,11 @@ export default function BudgetsScreen() {
 
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.background },
+    container: { flex: 1, backgroundColor: colors.surface },
     listContent: { padding: 16 },
     empty: { textAlign: "center", color: colors.textSecondary, marginTop: 40 },
     card: {
-      backgroundColor: colors.surface,
+      backgroundColor: colors.background,
       borderRadius: 12,
       padding: 16,
       marginBottom: 12,

@@ -8,6 +8,7 @@ import { Prisma, TransactionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { DEFAULT_CATEGORIES } from './seed';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -22,6 +23,24 @@ export class CategoriesService {
   async create(userId: string, dto: CreateCategoryDto) {
     try {
       return await this.prisma.category.create({ data: { ...dto, userId } });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new ConflictException('A category with this name already exists');
+      }
+      throw err;
+    }
+  }
+
+  async update(userId: string, id: string, dto: UpdateCategoryDto) {
+    const category = await this.prisma.category.findUnique({ where: { id } });
+    if (!category) throw new NotFoundException('Category not found');
+    if (category.userId !== userId) throw new ForbiddenException();
+
+    try {
+      return await this.prisma.category.update({ where: { id }, data: dto });
     } catch (err) {
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&

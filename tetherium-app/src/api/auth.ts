@@ -19,6 +19,14 @@ export function login(email: string, password: string) {
   });
 }
 
+export function updatePushToken(token: string, pushToken: string) {
+  return apiRequest<void>("/auth/push-token", {
+    method: "POST",
+    token,
+    body: { pushToken },
+  });
+}
+
 export function register(email: string, password: string, name: string) {
   return apiRequest<AuthResponse>("/auth/register", {
     method: "POST",

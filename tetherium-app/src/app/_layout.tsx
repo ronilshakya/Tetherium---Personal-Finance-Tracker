@@ -1,4 +1,4 @@
-import { getMe } from "@/api";
+import { getMe, updatePushToken } from "@/api";
 import {
   useFonts,
   Inter_400Regular,
@@ -12,6 +12,9 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { registerForPushNotifications } from "@/utils/pushNotifications";
+import { ThemeColors } from "@/theme/colors";
+import { StyleSheet } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +27,7 @@ export default function RootLayout() {
   const segments = useSegments();
   const router = useRouter();
   const { colors, isDark } = useTheme();
+  const styles = getStyles(colors);
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -50,7 +54,14 @@ export default function RootLayout() {
     }
     if (isAuthenticated && token) {
       getMe(token)
-        .then((user) => login(user, token))
+        .then((user) => {
+          login(user, token);
+          // registerForPushNotifications().then((pushToken) => {
+          //   if (pushToken) {
+          //     updatePushToken(token, pushToken).catch(console.error);
+          //   }
+          // });
+        })
         .catch(() => logout());
     }
   }, [isAuthenticated, hasHydrated, segments]);
@@ -65,7 +76,14 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
+          contentStyle: styles.header,
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            color: colors.text,
+          },
         }}
       >
         <Stack.Screen name="(tabs)" />
@@ -96,7 +114,7 @@ export default function RootLayout() {
           options={{
             presentation: "modal",
             headerShown: true,
-            title: "New Category",
+            title: "Category",
           }}
         />
         <Stack.Screen
@@ -111,7 +129,25 @@ export default function RootLayout() {
           name="notifications"
           options={{ headerShown: true, title: "Notifications" }}
         />
+        <Stack.Screen
+          name="goals/add"
+          options={{
+            presentation: "modal",
+            headerShown: true,
+            title: "New Goal",
+          }}
+        />
+        <Stack.Screen
+          name="goals/[id]"
+          options={{ headerShown: true, title: "Goal Details" }}
+        />
       </Stack>
     </>
   );
+}
+
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    header: { backgroundColor: colors.background },
+  });
 }

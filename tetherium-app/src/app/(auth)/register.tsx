@@ -11,6 +11,8 @@ import {
 import { useRouter } from "expo-router";
 import { register as registerApi } from "@/api";
 import { useAuthStore } from "@/stores/authStore";
+import { ThemeColors } from "@/theme/colors";
+import { useTheme } from "@/theme/useTheme";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -21,6 +23,8 @@ export default function RegisterScreen() {
 
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
 
   const handleRegister = async () => {
     if (!name.trim() || !email.trim() || !password) {
@@ -59,12 +63,14 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder="Full name"
+        placeholderTextColor={colors.textSecondary}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor={colors.textSecondary}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -73,6 +79,7 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={colors.textSecondary}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -80,6 +87,7 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder="Confirm password"
+        placeholderTextColor={colors.textSecondary}
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
@@ -100,27 +108,30 @@ export default function RegisterScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 32,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  linkContainer: { marginTop: 20, alignItems: "center" },
-  link: { color: "#2563eb", fontWeight: "600" },
-});
+function getStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      padding: 24,
+      backgroundColor: colors.background,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: "bold",
+      marginBottom: 32,
+      textAlign: "center",
+      color: colors.text,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 16,
+      color: colors.text,
+    },
+    linkContainer: { marginTop: 20, alignItems: "center" },
+    link: { color: colors.primary, fontWeight: "600" },
+  });
+}

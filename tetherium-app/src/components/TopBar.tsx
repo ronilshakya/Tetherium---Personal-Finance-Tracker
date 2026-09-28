@@ -21,15 +21,20 @@ export function TopBar() {
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => router.push("/settings")}
-        >
-          <Ionicons name="settings-outline" size={24} color="#374151" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.iconButton}
           onPress={() => router.push("/notifications")}
         >
-          <Ionicons name="notifications-outline" size={24} color="#374151" />
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={colors.text}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => router.push("/settings")}
+        >
+          <Ionicons name="settings-outline" size={24} color={colors.text} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -53,7 +58,7 @@ function getStyles(colors: ThemeColors) {
       justifyContent: "space-between",
       paddingHorizontal: 16,
       paddingBottom: 12,
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.borderLight,
     },

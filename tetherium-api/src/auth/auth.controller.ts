@@ -21,6 +21,15 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('push-token')
+  updatePushToken(
+    @CurrentUser() user: { userId: string },
+    @Body('pushToken') pushToken: string,
+  ) {
+    return this.authService.updatePushToken(user.userId, pushToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   me(@CurrentUser() user: { userId: string; email: string }) {
     return this.authService.getProfile(user.userId);

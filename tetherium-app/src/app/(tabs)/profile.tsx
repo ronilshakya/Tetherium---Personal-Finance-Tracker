@@ -79,7 +79,7 @@ export default function ProfileScreen() {
 
 function getStyles(colors: ThemeColors) {
   return StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.background, padding: 20 },
+    container: { flex: 1, backgroundColor: colors.surface, padding: 20 },
     header: { alignItems: "center", marginTop: 20, marginBottom: 32 },
     avatar: {
       width: 88,

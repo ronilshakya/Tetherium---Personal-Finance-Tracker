@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -13,6 +14,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
@@ -25,6 +27,15 @@ export class CategoriesController {
     @Body() dto: CreateCategoryDto,
   ) {
     return this.categoriesService.create(user.userId, dto);
+  }
+
+  @Patch(':id')
+  update(
+    @CurrentUser() user: { userId: string },
+    @Param('id') id: string,
+    @Body() dto: UpdateCategoryDto,
+  ) {
+    return this.categoriesService.update(user.userId, id, dto);
   }
 
   @Get()

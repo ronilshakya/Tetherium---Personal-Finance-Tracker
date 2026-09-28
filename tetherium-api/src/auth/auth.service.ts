@@ -97,4 +97,12 @@ export class AuthService {
       select: { id: true, email: true, name: true, currency: true },
     });
   }
+
+  async updatePushToken(userId: string, pushToken: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { pushToken },
+      select: { id: true },
+    });
+  }
 }
